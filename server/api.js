@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const apiRouter = express.Router();
 
 const {
@@ -10,14 +10,18 @@ const {
   deleteFromDatabasebyId,
   deleteAllFromDatabase,
 } = require("./db.js");
+const checkMillionDollarIdea = require("./checkMillionDollarIdea.js");
 
 // Parameter handler
-apiRouter.use('/:route/:id', (req, res, next) => {
+apiRouter.use("/:route/:id", (req, res, next) => {
   const elem = getFromDatabaseById(req.params.route, req.params.id);
   req.route = req.params.route;
   req.id = req.params.id;
   req.elem = elem;
-  if (elem && (req.params.route === "minions" || req.params.route === "ideas")) {
+  if (
+    elem &&
+    (req.params.route === "minions" || req.params.route === "ideas")
+  ) {
     next();
   } else {
     res.status(404).send();
@@ -25,12 +29,14 @@ apiRouter.use('/:route/:id', (req, res, next) => {
 });
 
 // Route methods
-apiRouter.get('/:route/', (req, res, next) => {
+apiRouter.get("/:route/", (req, res, next) => {
   const data = getAllFromDatabase(req.params.route);
   res.send(data);
 });
 
-apiRouter.post('/:route', (req, res, next) => {
+apiRouter.post("/ideas", checkMillionDollarIdea);
+
+apiRouter.post("/:route", (req, res, next) => {
   let data;
   if (req.params.route === "minions" || req.params.route === "ideas") {
     data = addToDatabase(req.params.route, req.body);
@@ -41,25 +47,25 @@ apiRouter.post('/:route', (req, res, next) => {
   res.status(201).send(data);
 });
 
-apiRouter.delete('/:route', (req, res, next) => {
+apiRouter.delete("/:route", (req, res, next) => {
   if (req.params.route === "meetings") {
     deleteAllFromDatabase(req.params.route);
     res.status(204).send();
   }
-})
+});
 
 // Id methods
-apiRouter.get('/:route/:id', (req, res, next) => {
+apiRouter.get("/:route/:id", (req, res, next) => {
   const elem = getFromDatabaseById(req.params.route, req.params.id);
   res.send(elem);
 });
 
-apiRouter.put('/:route/:id', (req, res, next) => {
+apiRouter.put("/:route/:id", (req, res, next) => {
   const elem = updateInstanceInDatabase(req.params.route, req.body);
   res.send(elem);
 });
 
-apiRouter.delete('/:route/:id', (req, res, next) => {
+apiRouter.delete("/:route/:id", (req, res, next) => {
   deleteFromDatabasebyId(req.params.route, req.id);
   res.status(204).send();
 });
