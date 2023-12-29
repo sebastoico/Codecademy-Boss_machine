@@ -70,4 +70,31 @@ apiRouter.delete("/:route/:id", (req, res, next) => {
   res.status(204).send();
 });
 
+// Work routes
+apiRouter.get("/minions/:minionId/work", (req, res, next) => {
+  const minionWorks = getAllFromDatabase("work").filter(
+    (work) => work.minionId === req.params.minionId
+  );
+  res.send(minionWorks);
+});
+
+apiRouter.post("/minions/:minionId/work", (req, res, next) => {
+  const work = addToDatabase("work", req.body);
+  res.status(201).send(work);
+});
+
+apiRouter.put("/minions/:minionId/work/:workId", (req, res, next) => {
+  if (req.body.minionId === req.params.minionId) {
+    const work = updateInstanceInDatabase("work", req.body);
+    res.send(work);
+  } else {
+    res.status(400).send();
+  }
+});
+
+apiRouter.delete("/minions/:minionId/work/:workId", (req, res, next) => {
+  const work = deleteFromDatabasebyId("work", req.params.workId);
+  res.status(204).send(work);
+});
+
 module.exports = apiRouter;
